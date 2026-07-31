@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>pepito — bolajoningiz uchun · сеть детских магазинов в Ташкенте</title>
+<meta name="description" content="pepito — сеть магазинов детских товаров в Ташкенте: смеси, каши, подгузники, средства ухода и аксессуары. 17 магазинов по городу, доставка. Работаем с 09:00 до 00:00.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2048%2048'%3E%3Crect%20width%3D'48'%20height%3D'48'%20rx%3D'12'%20fill%3D'%234a42ad'%2F%3E%3Cg%20fill%3D'%23fff'%20transform%3D'translate(4.8%204.8)%20scale(0.8)'%3E%3Cellipse%20cx%3D'24'%20cy%3D'12.5'%20rx%3D'8.5'%20ry%3D'11'%20transform%3D'rotate(12%2024%2012.5)'%2F%3E%3Cellipse%20cx%3D'35'%20cy%3D'21'%20rx%3D'8'%20ry%3D'10.5'%20transform%3D'rotate(78%2035%2021)'%2F%3E%3Cellipse%20cx%3D'32'%20cy%3D'34'%20rx%3D'8'%20ry%3D'10.5'%20transform%3D'rotate(150%2032%2034)'%2F%3E%3Cellipse%20cx%3D'17.5'%20cy%3D'34.5'%20rx%3D'8'%20ry%3D'10.5'%20transform%3D'rotate(210%2017.5%2034.5)'%2F%3E%3Cellipse%20cx%3D'13'%20cy%3D'22'%20rx%3D'8'%20ry%3D'10.5'%20transform%3D'rotate(282%2013%2022)'%2F%3E%3Ccircle%20cx%3D'24'%20cy%3D'24'%20r%3D'8'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --primary: #4a42ad;
+    --primary-dark: #362f86;
+    --primary-deep: #251f63;
+    --accent: #4f8ce9;
+    --accent-soft: #a7c6f8;
+    --accent-light: #eaf1fd;
+    --ink: #2b2856;
+    --ink-soft: #6f6c8a;
+    --card: #ffffff;
+    --bg: #f7f7fd;
+    --radius: 20px;
+    --shadow: 0 6px 24px rgba(59, 51, 144, .10);
+    --shadow-lift: 0 18px 44px rgba(59, 51, 144, .18);
+    --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+    --ease-out: cubic-bezier(.22, 1, .36, 1);
+  }
+  .tg-app {
+    --bg: var(--tg-theme-bg-color, #f7f7fd);
+    --card: var(--tg-theme-secondary-bg-color, #ffffff);
+    --ink: var(--tg-theme-text-color, #2b2856);
+    --ink-soft: var(--tg-theme-hint-color, #6f6c8a);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+  button { font-family: inherit; }
+
+  /* ============ scroll progress ============ */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    background: linear-gradient(90deg, var(--accent), #fff);
+    z-index: 300; border-radius: 0 3px 3px 0;
+    transition: width .1s linear;
+  }
+
+  /* ============ preloader ============ */
+  #preloader {
+    position: fixed; inset: 0; z-index: 500;
+    background: linear-gradient(150deg, var(--primary) 0%, var(--primary-dark) 60%, var(--primary-deep) 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    transition: opacity .5s ease, visibility .5s;
+  }
+  #preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+  #preloader svg { width: 74px; height: 74px; fill: #fff; animation: bloom 1.1s var(--ease-spring) both, spinSlow 6s linear .9s infinite; }
+  #preloader .pl-word { color: #fff; font-weight: 800; font-size: 26px; letter-spacing: 1px; animation: fadeUp .7s .25s var(--ease-out) both; }
+  @keyframes bloom { from { transform: scale(0) rotate(-120deg); } to { transform: scale(1) rotate(0); } }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* ============ header ============ */
+  header {
+    position: sticky; top: 0; z-index: 90;
+    background: rgba(247, 247, 253, .82);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    transition: box-shadow .3s;
+  }
+  header.scrolled { box-shadow: 0 6px 24px rgba(37, 31, 99, .10); }
+  .head-in { display: flex; align-items: center; gap: 12px; padding-top: 10px; padding-bottom: 10px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 23px; color: var(--primary); text-decoration: none; letter-spacing: .3px; }
+  .logo-badge {
+    width: 38px; height: 38px; border-radius: 12px; background: var(--primary);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: transform .5s var(--ease-spring);
+  }
+  .logo:hover .logo-badge { transform: rotate(90deg); }
+  .logo-badge svg { width: 24px; height: 24px; fill: #fff; }
+  .head-spacer { flex: 1; }
+  .phone-link { display: none; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+  .phone-link:hover { color: var(--primary); }
+  @media (min-width: 720px) { .phone-link { display: block; } }
+  .lang-btn, .cart-btn {
+    border: none; cursor: pointer;
+    background: var(--accent-light); color: var(--accent);
+    font-weight: 700; font-size: 14px;
+    padding: 9px 13px; border-radius: 12px;
+    transition: transform .2s var(--ease-spring), background .2s;
+  }
+  .lang-btn:hover { transform: translateY(-2px); }
+  .cart-btn { background: var(--primary); color: #fff; position: relative; display: flex; align-items: center; gap: 6px; }
+  .cart-btn:hover { transform: translateY(-2px); }
+  .cart-count {
+    position: absolute; top: -7px; right: -7px;
+    background: #fff; color: var(--primary); box-shadow: 0 2px 8px rgba(37,31,99,.35);
+    font-size: 11px; font-weight: 800;
+    min-width: 19px; height: 19px; border-radius: 10px;
+    display: none; align-items: center; justify-content: center; padding: 0 5px;
+  }
+  .cart-count.show { display: flex; }
+  .cart-count.pop { animation: pop .45s var(--ease-spring); }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.55); } 100% { transform: scale(1); } }
+
+  /* ============ hero ============ */
+  .hero {
+    position: relative; overflow: hidden;
+    background: linear-gradient(150deg, #544bc2 0%, var(--primary) 30%, var(--primary-dark) 68%, var(--primary-deep) 100%);
+    color: #fff;
+    border-radius: 0 0 32px 32px;
+  }
+  #fx { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-in {
+    position: relative; z-index: 2;
+    min-height: min(88vh, 760px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding-top: 56px; padding-bottom: 76px;
+  }
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px; padding: 7px 16px;
+    font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: rgba(255,255,255,.92);
+    animation: fadeUp .8s .1s var(--ease-out) both;
+  }
+  .hero-chip svg { width: 15px; height: 15px; fill: #fff; }
+  .hero h1 {
+    font-size: clamp(34px, 6.4vw, 68px); line-height: 1.08; font-weight: 800;
+    letter-spacing: -.5px; max-width: 15ch; margin: 22px 0 18px; text-wrap: balance;
+  }
+  .hero h1 .w { display: inline-block; opacity: 0; transform: translateY(34px) rotate(3deg); transition: opacity .6s var(--ease-out), transform .7s var(--ease-spring); }
+  .hero h1 .w.in { opacity: 1; transform: none; }
+  .hero h1 .hl { color: var(--accent-soft); position: relative; }
+  .hero h1 .hl::after {
+    content: ''; position: absolute; left: 2%; right: 2%; bottom: .06em; height: .18em;
+    background: rgba(167,198,248,.35); border-radius: 99px; z-index: -1;
+    transform: scaleX(0); transform-origin: left; transition: transform .8s .9s var(--ease-out);
+  }
+  .hero h1.done .hl::after { transform: scaleX(1); }
+  .hero-sub { color: rgba(255,255,255,.78); font-size: clamp(15px, 2vw, 18px); max-width: 52ch; animation: fadeUp .8s .55s var(--ease-out) both; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; animation: fadeUp .8s .7s var(--ease-out) both; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: none; cursor: pointer; text-decoration: none;
+    font-weight: 700; font-size: 15.5px;
+    padding: 15px 28px; border-radius: 16px;
+    background: var(--primary); color: #fff;
+    transition: transform .25s var(--ease-spring), box-shadow .25s;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(37,31,99,.35); }
+  .btn:active { transform: scale(.97); }
+  .hero .btn { background: #fff; color: var(--primary); }
+  .hero .btn.ghost { background: rgba(255,255,255,.14); color: #fff; border: 1px solid rgba(255,255,255,.28); }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 26px; animation: fadeUp .8s .85s var(--ease-out) both; }
+  .badge {
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px; font-size: 13px; font-weight: 600; padding: 7px 14px; color: #fff;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2;
+    width: 26px; height: 42px; border: 2px solid rgba(255,255,255,.4); border-radius: 14px;
+  }
+  .hero-scroll::after {
+    content: ''; position: absolute; left: 50%; top: 7px; width: 4px; height: 8px; margin-left: -2px;
+    background: #fff; border-radius: 2px; animation: scrollHint 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollHint { 0%, 100% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(14px); opacity: 0; } }
+  .float-emoji { position: absolute; z-index: 1; font-size: clamp(28px, 4vw, 46px); opacity: .85; filter: drop-shadow(0 10px 18px rgba(0,0,0,.25)); animation: floaty 6s ease-in-out infinite; pointer-events: none; }
+  @keyframes floaty { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-22px) rotate(6deg); } }
+
+  /* ============ marquee ============ */
+  .marquee { background: var(--primary-deep); color: #fff; overflow: hidden; padding: 14px 0; position: relative; z-index: 3; }
+  .marquee-track { display: flex; gap: 48px; width: max-content; animation: slide 26s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  .marquee-track span { font-weight: 800; font-size: 15px; letter-spacing: 2.5px; text-transform: uppercase; opacity: .75; white-space: nowrap; display: flex; align-items: center; gap: 48px; }
+  .marquee-track span::after { content: '✿'; opacity: .5; font-size: 12px; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* ============ sections ============ */
+  section { padding-top: 72px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  .eyebrow::before { content: ''; width: 26px; height: 2px; background: var(--accent); border-radius: 2px; }
+  h2 { font-size: clamp(26px, 3.6vw, 38px); line-height: 1.15; letter-spacing: -.4px; margin-bottom: 20px; text-wrap: balance; }
+  h2 em { font-style: normal; color: var(--primary); }
+
+  /* reveal on scroll */
+  .rv { opacity: 0; transform: translateY(36px); transition: opacity .7s var(--ease-out), transform .8s var(--ease-out); transition-delay: var(--d, 0s); }
+  .rv.visible { opacity: 1; transform: none; }
+
+  /* ============ stats ============ */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+  .stat {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 26px 22px; text-align: center; position: relative; overflow: hidden;
+  }
+  .stat::before { content: ''; position: absolute; top: -34px; right: -34px; width: 90px; height: 90px; border-radius: 50%; background: var(--accent-light); }
+  .stat b { position: relative; display: block; font-size: clamp(30px, 4vw, 42px); font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+  .stat span { position: relative; font-size: 13.5px; color: var(--ink-soft); font-weight: 600; }
+
+  /* ============ catalog ============ */
+  .cats { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat-chip {
+    border: none; cursor: pointer; white-space: nowrap;
+    background: var(--card); color: var(--ink); box-shadow: var(--shadow);
+    font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: 999px;
+    display: flex; align-items: center; gap: 7px;
+    transition: background .25s, color .25s, transform .25s var(--ease-spring);
+  }
+  .cat-chip:hover { transform: translateY(-2px); }
+  .cat-chip.active { background: var(--primary); color: #fff; }
+  .grid { display: grid; gap: 18px; margin-top: 18px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .card {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px; display: flex; flex-direction: column; gap: 9px;
+    transition: transform .35s var(--ease-out), box-shadow .35s;
+    will-change: transform; position: relative;
+  }
+  .card:hover { transform: translateY(-7px); box-shadow: var(--shadow-lift); }
+  .card .pic {
+    position: relative; overflow: hidden; border-radius: 15px;
+    background: linear-gradient(145deg, var(--accent-light), #f2edff);
+    padding: 22px 0; text-align: center; user-select: none;
+  }
+  .card .pic .emoji { font-size: 52px; line-height: 1; display: inline-block; filter: drop-shadow(0 10px 12px rgba(59,51,144,.22)); transition: transform .45s var(--ease-spring); }
+  .card:hover .pic .emoji { transform: scale(1.15) rotate(-6deg); }
+  .card .pic::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: -80%; width: 55%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,.65), transparent);
+    transform: skewX(-20deg); transition: left .6s ease;
+  }
+  .card:hover .pic::after { left: 130%; }
+  .sale-tag {
+    position: absolute; top: 10px; left: 10px; z-index: 2;
+    background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800;
+    padding: 4px 9px; border-radius: 9px; letter-spacing: .5px;
+  }
+  .card .brand { font-size: 11.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.2px; }
+  .card .name { font-size: 14.5px; font-weight: 600; flex: 1; }
+  .price-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .card .price { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .card .price small { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+  .card .old { font-size: 13px; color: var(--ink-soft); text-decoration: line-through; font-variant-numeric: tabular-nums; }
+  .add-btn {
+    border: none; cursor: pointer;
+    background: var(--primary); color: #fff; font-weight: 700; font-size: 14px;
+    padding: 11px; border-radius: 13px;
+    transition: background .2s, transform .2s var(--ease-spring);
+  }
+  .add-btn:hover { background: var(--primary-dark); }
+  .add-btn:active { transform: scale(.95); }
+  .qty-row { display: flex; align-items: center; gap: 8px; }
+  .qty-row button {
+    border: none; cursor: pointer;
+    width: 38px; height: 40px; border-radius: 13px;
+    background: var(--accent-light); color: var(--primary); font-size: 18px; font-weight: 800;
+    transition: transform .2s var(--ease-spring);
+  }
+  .qty-row button:active { transform: scale(.9); }
+  .qty-row span { flex: 1; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .fly { position: fixed; z-index: 400; font-size: 40px; pointer-events: none; transition: transform .8s cubic-bezier(.5, -0.2, .75, .35), opacity .8s; }
+
+  /* ============ benefits ============ */
+  .benefits { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .benefit {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px;
+    transition: transform .35s var(--ease-out), box-shadow .35s;
+  }
+  .benefit:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
+  .benefit .ic {
+    width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, var(--primary), var(--accent)); font-size: 25px;
+    box-shadow: 0 8px 18px rgba(74,66,173,.35);
+  }
+  .benefit b { display: block; margin: 14px 0 6px; font-size: 16.5px; }
+  .benefit p { font-size: 14px; color: var(--ink-soft); }
+
+  /* ============ instagram ============ */
+  .insta { background: linear-gradient(150deg, var(--primary) 0%, var(--primary-dark) 70%, var(--primary-deep) 100%); border-radius: 32px; color: #fff; overflow: hidden; position: relative; }
+  .insta::before, .insta::after {
+    content: ''; position: absolute; border-radius: 50%; background: rgba(255,255,255,.06);
+  }
+  .insta::before { width: 340px; height: 340px; top: -120px; right: -80px; }
+  .insta::after { width: 240px; height: 240px; bottom: -100px; left: -60px; }
+  .insta-in { position: relative; z-index: 2; display: flex; align-items: center; gap: 40px; padding: 48px 44px; flex-wrap: wrap; }
+  .insta-text { flex: 1 1 320px; }
+  .insta-text .eyebrow { color: var(--accent-soft); }
+  .insta-text .eyebrow::before { background: var(--accent-soft); }
+  .insta-text h2 { color: #fff; }
+  .insta-text h2 em { color: var(--accent-soft); }
+  .insta-text p { color: rgba(255,255,255,.75); max-width: 46ch; margin-bottom: 24px; }
+  .insta-stats { display: flex; gap: 28px; margin-bottom: 26px; }
+  .insta-stats b { display: block; font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .insta-stats span { font-size: 12.5px; color: rgba(255,255,255,.65); font-weight: 600; letter-spacing: .5px; }
+  .insta .btn { background: #fff; color: var(--primary); }
+  .phone {
+    flex: 0 0 auto; width: 250px; height: 500px; margin: 0 auto;
+    border-radius: 38px; background: #17143a; padding: 12px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.08);
+    position: relative; transform: rotate(4deg);
+  }
+  .phone::before { content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 86px; height: 22px; background: #17143a; border-radius: 0 0 14px 14px; z-index: 3; }
+  .phone-screen { width: 100%; height: 100%; border-radius: 28px; overflow: hidden; background: #f2f1fb; position: relative; }
+  .feed { display: flex; flex-direction: column; gap: 10px; padding: 34px 10px 10px; animation: feedScroll 20s linear infinite; }
+  .phone:hover .feed { animation-play-state: paused; }
+  @keyframes feedScroll { to { transform: translateY(-50%); } }
+  .post { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(37,31,99,.10); flex-shrink: 0; }
+  .post .post-img { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .post .post-row { display: flex; align-items: center; gap: 6px; padding: 8px 10px; font-size: 11px; color: #6f6c8a; font-weight: 700; }
+  .post .post-row .heart { color: #e05c7a; }
+
+  /* ============ branches ============ */
+  .branches { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .branch {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px;
+    border-top: 4px solid var(--accent);
+    transition: transform .35s var(--ease-out), box-shadow .35s;
+  }
+  .branch:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
+  .branch b { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 16px; }
+  .branch b svg { width: 16px; height: 16px; fill: var(--accent); flex-shrink: 0; }
+  .branch p { font-size: 14px; color: var(--ink-soft); }
+  .branch .hours { color: var(--accent); font-weight: 700; font-size: 13px; margin-top: 10px; }
+
+  /* ============ cta band ============ */
+  .cta-band {
+    margin-top: 72px;
+    background: linear-gradient(120deg, var(--accent) 0%, var(--primary) 60%);
+    border-radius: 32px; color: #fff; text-align: center;
+    padding: 52px 24px; position: relative; overflow: hidden;
+  }
+  .cta-band .fl { position: absolute; opacity: .12; }
+  .cta-band h2 { color: #fff; }
+  .cta-band p { color: rgba(255,255,255,.8); margin-bottom: 26px; }
+  .cta-band .btn { background: #fff; color: var(--primary); }
+
+  /* ============ footer ============ */
+  footer { margin-top: 72px; background: var(--primary-deep); color: #fff; border-radius: 32px 32px 0 0; }
+  .tg-app footer { border-radius: 24px; margin: 60px 0 90px; }
+  .foot-in { padding-top: 40px; padding-bottom: 30px; display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  .foot-col { min-width: 210px; flex: 1; }
+  .foot-col > b { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 15px; }
+  .foot-col > b svg { width: 22px; height: 22px; fill: #fff; }
+  .foot-col a { display: block; color: rgba(255,255,255,.75); text-decoration: none; font-size: 14px; margin-bottom: 8px; transition: color .2s, transform .2s; }
+  .foot-col a:hover { color: #fff; transform: translateX(3px); }
+  .foot-note { padding-bottom: 22px; font-size: 12.5px; color: rgba(255,255,255,.45); }
+
+  /* ============ cart drawer ============ */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(23, 20, 58, .5);
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 190;
+  }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 200;
+    width: min(430px, 100%); background: var(--bg);
+    transform: translateX(105%); transition: transform .4s var(--ease-out);
+    display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head { display: flex; align-items: center; padding: 18px; border-bottom: 1px solid rgba(43,40,86,.08); }
+  .drawer-head b { flex: 1; font-size: 18px; }
+  .close-btn { border: none; background: var(--accent-light); color: var(--ink); width: 36px; height: 36px; border-radius: 12px; cursor: pointer; font-size: 16px; transition: transform .3s var(--ease-spring); }
+  .close-btn:hover { transform: rotate(90deg); }
+  .drawer-body { flex: 1; overflow-y: auto; padding: 18px; }
+  .cart-empty { text-align: center; color: var(--ink-soft); padding: 60px 0; }
+  .cart-empty .ic { font-size: 54px; display: block; animation: floaty 4s ease-in-out infinite; }
+  .cart-item { display: flex; gap: 10px; align-items: center; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 10px; margin-bottom: 10px; animation: fadeUp .35s var(--ease-out) both; }
+  .cart-item .pic { font-size: 30px; background: var(--accent-light); border-radius: 12px; width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cart-item .info { flex: 1; min-width: 0; }
+  .cart-item .info b { font-size: 13.5px; display: block; }
+  .cart-item .info span { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .cart-item .qty-row button { width: 30px; height: 32px; font-size: 15px; }
+  .cart-item .qty-row span { min-width: 22px; }
+  .drawer-foot { padding: 16px 18px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(43,40,86,.08); }
+  .total-row { display: flex; justify-content: space-between; font-weight: 800; font-size: 17px; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+  .field { margin-bottom: 10px; }
+  .field input {
+    width: 100%; border: 2px solid rgba(43,40,86,.1); border-radius: 13px;
+    padding: 12px 14px; font-family: inherit; font-size: 14px; background: var(--card); color: var(--ink);
+    outline: none; transition: border-color .2s;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .checkout-btn { width: 100%; }
+  .order-ok { text-align: center; padding: 50px 10px; }
+  .order-ok .ic { font-size: 60px; display: block; animation: pop .6s var(--ease-spring); }
+  .order-ok b { display: block; font-size: 19px; margin: 12px 0 6px; }
+  .order-ok p { color: var(--ink-soft); font-size: 14px; }
+
+  /* toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 90px);
+    background: var(--primary-deep); color: #fff; font-size: 14px; font-weight: 600;
+    padding: 12px 22px; border-radius: 999px; z-index: 400; box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    transition: transform .4s var(--ease-spring); pointer-events: none;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+
+  .tg-only { display: none; }
+  .tg-app .web-only { display: none !important; }
+  .tg-app .tg-only { display: block; }
+  .tg-app .hero-in { min-height: 60vh; }
+  .tg-app #preloader { display: none; }
+
+  /* ============ mobile ============ */
+  @media (max-width: 640px) {
+    .head-in { gap: 8px; }
+    .logo { font-size: 20px; gap: 7px; }
+    .logo-badge { width: 34px; height: 34px; border-radius: 10px; }
+    .logo-badge svg { width: 21px; height: 21px; }
+    .lang-btn { padding: 8px 10px; }
+    .hero-in { min-height: 82vh; padding-top: 40px; padding-bottom: 66px; }
+    .float-emoji { font-size: 26px; opacity: .55; }
+    .fe1 { top: 6% !important; left: 5% !important; }
+    .fe2 { top: 7% !important; right: 6% !important; }
+    .fe3, .fe4 { display: none; }
+    .hero-cta { width: 100%; }
+    .hero-cta .btn { flex: 1 1 auto; }
+    section { padding-top: 52px; }
+    .insta-in { padding: 34px 22px; gap: 28px; }
+    .phone { transform: rotate(0); width: 220px; height: 440px; }
+    .cta-band { margin-top: 52px; padding: 40px 20px; }
+    footer { margin-top: 52px; }
+    .foot-in { gap: 20px; }
+  }
+  @media (max-width: 480px) {
+    .cart-label { display: none; }
+    .cart-btn { padding: 9px 13px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+    .card { padding: 10px; }
+    .card .pic { padding: 16px 0; }
+    .card .pic .emoji { font-size: 42px; }
+    .card .name { font-size: 13px; }
+    .card .price { font-size: 15px; }
+    .add-btn { padding: 10px; font-size: 13.5px; }
+    .stat { padding: 20px 14px; }
+    .benefit { padding: 18px; }
+    .branch { padding: 18px; }
+  }
+
+  /* ============ reduced motion ============ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01s !important; animation-iteration-count: 1 !important; transition-duration: .01s !important; }
+    .marquee-track, .feed { animation: none !important; }
+    .rv { opacity: 1; transform: none; }
+    .hero h1 .w { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="preloader">
+  <svg viewBox="0 0 48 48"><ellipse cx="24" cy="12.5" rx="8.5" ry="11" transform="rotate(12 24 12.5)"/><ellipse cx="35" cy="21" rx="8" ry="10.5" transform="rotate(78 35 21)"/><ellipse cx="32" cy="34" rx="8" ry="10.5" transform="rotate(150 32 34)"/><ellipse cx="17.5" cy="34.5" rx="8" ry="10.5" transform="rotate(210 17.5 34.5)"/><ellipse cx="13" cy="22" rx="8" ry="10.5" transform="rotate(282 13 22)"/><circle cx="24" cy="24" r="8"/></svg>
+  <div class="pl-word">pepito</div>
+</div>
+
+<header id="header">
+  <div class="wrap head-in">
+    <a class="logo" href="#"><span class="logo-badge"><svg viewBox="0 0 48 48"><ellipse cx="24" cy="12.5" rx="8.5" ry="11" transform="rotate(12 24 12.5)"/><ellipse cx="35" cy="21" rx="8" ry="10.5" transform="rotate(78 35 21)"/><ellipse cx="32" cy="34" rx="8" ry="10.5" transform="rotate(150 32 34)"/><ellipse cx="17.5" cy="34.5" rx="8" ry="10.5" transform="rotate(210 17.5 34.5)"/><ellipse cx="13" cy="22" rx="8" ry="10.5" transform="rotate(282 13 22)"/><circle cx="24" cy="24" r="8"/></svg></span>pepito</a>
+    <div class="head-spacer"></div>
+    <a class="phone-link" href="tel:+998785550400">+998 78 555-04-00</a>
+    <button class="lang-btn" id="langBtn">UZ</button>
+    <button class="cart-btn" id="cartOpenBtn">🛒 <span class="cart-label" data-i18n="cart">Корзина</span><span class="cart-count" id="cartCount">0</span></button>
+  </div>
+</header>
+
+<div class="hero">
+  <canvas id="fx"></canvas>
+  <span class="float-emoji fe1" style="top:16%;left:8%;animation-delay:0s">🍼</span>
+  <span class="float-emoji fe2" style="top:24%;right:9%;animation-delay:1.2s">🧸</span>
+  <span class="float-emoji fe3" style="bottom:22%;left:12%;animation-delay:2.1s">🦆</span>
+  <span class="float-emoji fe4" style="bottom:18%;right:14%;animation-delay:.7s">⭐</span>
+  <div class="wrap hero-in">
+    <span class="hero-chip"><svg viewBox="0 0 48 48"><ellipse cx="24" cy="12.5" rx="8.5" ry="11" transform="rotate(12 24 12.5)"/><ellipse cx="35" cy="21" rx="8" ry="10.5" transform="rotate(78 35 21)"/><ellipse cx="32" cy="34" rx="8" ry="10.5" transform="rotate(150 32 34)"/><ellipse cx="17.5" cy="34.5" rx="8" ry="10.5" transform="rotate(210 17.5 34.5)"/><ellipse cx="13" cy="22" rx="8" ry="10.5" transform="rotate(282 13 22)"/><circle cx="24" cy="24" r="8"/></svg> bolajoningiz uchun</span>
+    <h1 id="heroTitle"></h1>
+    <p class="hero-sub" data-i18n="heroSub">Смеси, каши, подгузники, средства ухода и аксессуары. 17 магазинов по Ташкенту и доставка на дом — каждый день с 09:00 до 00:00.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#catalog" data-i18n="toCatalog">Перейти в каталог</a>
+      <a class="btn ghost web-only" href="https://t.me/pepito_uz" target="_blank" rel="noopener">✈️ Telegram</a>
+    </div>
+    <div class="hero-badges">
+      <span class="badge">🚚 <span data-i18n="badgeDelivery">Доставка по Ташкенту</span></span>
+      <span class="badge">🏪 <span data-i18n="badgeStores">17 магазинов</span></span>
+      <span class="badge">🕘 09:00 — 00:00</span>
+    </div>
+  </div>
+  <div class="hero-scroll" aria-hidden="true"></div>
+</div>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat rv" style="--d:.0s"><b><span class="count" data-to="17">0</span></b><span data-i18n="st1">магазинов в Ташкенте</span></div>
+      <div class="stat rv" style="--d:.1s"><b><span class="count" data-to="50900">0</span>+</b><span data-i18n="st2">подписчиков в Instagram</span></div>
+      <div class="stat rv" style="--d:.2s"><b><span class="count" data-to="3000">0</span>+</b><span data-i18n="st3">товаров для малышей</span></div>
+      <div class="stat rv" style="--d:.3s"><b>09–00</b><span data-i18n="st4">открыты каждый день</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="catalog">
+  <div class="wrap">
+    <div class="rv"><span class="eyebrow" data-i18n="eyeCatalog">Каталог</span></div>
+    <h2 class="rv" data-i18n-html="catalogTitle">Всё, что нужно <em>вашему малышу</em></h2>
+    <div class="cats rv" id="cats"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="rv"><span class="eyebrow" data-i18n="eyeWhy">Почему мы</span></div>
+    <h2 class="rv" data-i18n-html="whyTitle">Родители выбирают <em>pepito</em></h2>
+    <div class="benefits">
+      <div class="benefit rv" style="--d:.0s"><div class="ic">✅</div><b data-i18n="b1t">Оригинальная продукция</b><p data-i18n="b1p">Работаем напрямую с официальными дистрибьюторами брендов.</p></div>
+      <div class="benefit rv" style="--d:.1s"><div class="ic">🚚</div><b data-i18n="b2t">Быстрая доставка</b><p data-i18n="b2p">Привезём заказ по Ташкенту в день оформления.</p></div>
+      <div class="benefit rv" style="--d:.2s"><div class="ic">🏪</div><b data-i18n="b3t">17 магазинов рядом</b><p data-i18n="b3p">Магазины во всех районах города, открыты до полуночи.</p></div>
+      <div class="benefit rv" style="--d:.3s"><div class="ic">💜</div><b data-i18n="b4t">Честные цены и акции</b><p data-i18n="b4p">Регулярные скидки на смеси и подгузники для постоянных клиентов.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="insta rv">
+      <div class="insta-in">
+        <div class="insta-text">
+          <span class="eyebrow">Instagram</span>
+          <h2 data-i18n-html="instaTitle">Мы в <em>@pepito_uz</em></h2>
+          <p data-i18n="instaSub">Акции, новинки, обзоры смесей и полезные советы для родителей — каждый день в наших сторис и рилсах.</p>
+          <div class="insta-stats">
+            <div><b>50 900+</b><span data-i18n="insta1">подписчиков</span></div>
+            <div><b>286</b><span data-i18n="insta2">публикаций</span></div>
+            <div><b>17</b><span data-i18n="insta3">магазинов</span></div>
+          </div>
+          <a class="btn" href="https://www.instagram.com/pepito_uz/" target="_blank" rel="noopener" data-i18n="instaBtn">Подписаться</a>
+        </div>
+        <div class="phone" aria-hidden="true">
+          <div class="phone-screen"><div class="feed" id="feed"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="branches">
+  <div class="wrap">
+    <div class="rv"><span class="eyebrow" data-i18n="eyeBranches">Адреса</span></div>
+    <h2 class="rv" data-i18n-html="branchesTitle">Наши <em>магазины</em></h2>
+    <div class="branches">
+      <div class="branch rv" style="--d:.0s"><b><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Шайхантахур</b><p data-i18n="brShoyx">Шайхантахурский район, Кокча дарвоза, 335 (ориентир — мечеть Кокча)</p><p class="hours">🕘 09:00 — 00:00</p></div>
+      <div class="branch rv" style="--d:.08s"><b><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Сергели</b><p data-i18n="brSergeli">Сергели, массив 7, дом 65 (1-й этаж)</p><p class="hours">🕘 09:00 — 00:00</p></div>
+      <div class="branch rv" style="--d:.16s"><b><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Учтепа</b><p data-i18n="brUchtepa">Учтепинский район, 13-й квартал, 6Б</p><p class="hours">🕘 09:00 — 00:00</p></div>
+      <div class="branch rv" style="--d:.24s"><b><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Хирмонтепа</b><p data-i18n="brKhirmon">Чиланзарский район, 1-й проезд Хирмонтепа, 34В</p><p class="hours">🕘 09:00 — 00:00</p></div>
+      <div class="branch rv" style="--d:.32s"><b><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span data-i18n="brMoreT">И ещё 13 магазинов</span></b><p data-i18n="brMoreP">Полный список адресов уточняйте в контакт-центре: +998 78 555-04-00</p><p class="hours">🕘 09:00 — 00:00</p></div>
+    </div>
+
+    <div class="cta-band rv">
+      <svg class="fl" style="width:120px;top:-30px;left:6%" viewBox="0 0 48 48" fill="#fff"><ellipse cx="24" cy="12.5" rx="8.5" ry="11" transform="rotate(12 24 12.5)"/><ellipse cx="35" cy="21" rx="8" ry="10.5" transform="rotate(78 35 21)"/><ellipse cx="32" cy="34" rx="8" ry="10.5" transform="rotate(150 32 34)"/><ellipse cx="17.5" cy="34.5" rx="8" ry="10.5" transform="rotate(210 17.5 34.5)"/><ellipse cx="13" cy="22" rx="8" ry="10.5" transform="rotate(282 13 22)"/><circle cx="24" cy="24" r="8"/></svg>
+      <svg class="fl" style="width:90px;bottom:-20px;right:8%" viewBox="0 0 48 48" fill="#fff"><ellipse cx="24" cy="12.5" rx="8.5" ry="11" transform="rotate(12 24 12.5)"/><ellipse cx="35" cy="21" rx="8" ry="10.5" transform="rotate(78 35 21)"/><ellipse cx="32" cy="34" rx="8" ry="10.5" transform="rotate(150 32 34)"/><ellipse cx="17.5" cy="34.5" rx="8" ry="10.5" transform="rotate(210 17.5 34.5)"/><ellipse cx="13" cy="22" rx="8" ry="10.5" transform="rotate(282 13 22)"/><circle cx="24" cy="24" r="8"/></svg>
+      <h2 data-i18n="ctaT">Нужна помощь с выбором?</h2>
+      <p data-i18n="ctaP">Позвоните — наши консультанты подберут смесь, подгузники и всё нужное под возраст вашего малыша.</p>
+      <a class="btn" href="tel:+998785550400">📞 +998 78 555-04-00</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-col">
+      <b><svg viewBox="0 0 48 48"><ellipse cx="24" cy="12.5" rx="8.5" ry="11" transform="rotate(12 24 12.5)"/><ellipse cx="35" cy="21" rx="8" ry="10.5" transform="rotate(78 35 21)"/><ellipse cx="32" cy="34" rx="8" ry="10.5" transform="rotate(150 32 34)"/><ellipse cx="17.5" cy="34.5" rx="8" ry="10.5" transform="rotate(210 17.5 34.5)"/><ellipse cx="13" cy="22" rx="8" ry="10.5" transform="rotate(282 13 22)"/><circle cx="24" cy="24" r="8"/></svg>pepito · bolajoningiz uchun</b>
+      <a href="#" data-i18n="footAbout">Сеть магазинов детских товаров в Ташкенте</a>
+    </div>
+    <div class="foot-col">
+      <b data-i18n="footContacts">Контакты</b>
+      <a href="tel:+998785550400">📞 +998 78 555-04-00</a>
+      <a href="https://t.me/pepito_uz" target="_blank" rel="noopener">✈️ Telegram — @pepito_uz</a>
+      <a href="https://www.instagram.com/pepito_uz/" target="_blank" rel="noopener">📷 Instagram — @pepito_uz</a>
+      <a href="https://www.facebook.com/Pepito.uz" target="_blank" rel="noopener">👥 Facebook — Pepito.uz</a>
+    </div>
+    <div class="foot-col">
+      <b data-i18n="footHours">Режим работы</b>
+      <a href="#" data-i18n="footDaily">Ежедневно: 09:00 — 00:00</a>
+      <a href="#branches" data-i18n="footBranches">Адреса магазинов</a>
+    </div>
+  </div>
+  <div class="wrap foot-note">© <span id="year"></span> pepito · Tashkent, Uzbekistan</div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <b data-i18n="cartTitle">🛒 Ваша корзина</b>
+    <button class="close-btn" id="cartCloseBtn">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= i18n ================= */
+const I18N = {
+  ru: {
+    cart: 'Корзина',
+    heroTitle: 'Всё для вашего *малыша* в одном месте',
+    heroSub: 'Смеси, каши, подгузники, средства ухода и аксессуары. 17 магазинов по Ташкенту и доставка на дом — каждый день с 09:00 до 00:00.',
+    toCatalog: 'Перейти в каталог',
+    badgeDelivery: 'Доставка по Ташкенту', badgeStores: '17 магазинов',
+    st1: 'магазинов в Ташкенте', st2: 'подписчиков в Instagram', st3: 'товаров для малышей', st4: 'открыты каждый день',
+    eyeCatalog: 'Каталог', catalogTitle: 'Всё, что нужно <em>вашему малышу</em>',
+    eyeWhy: 'Почему мы', whyTitle: 'Родители выбирают <em>pepito</em>',
+    b1t: 'Оригинальная продукция', b1p: 'Работаем напрямую с официальными дистрибьюторами брендов.',
+    b2t: 'Быстрая доставка', b2p: 'Привезём заказ по Ташкенту в день оформления.',
+    b3t: '17 магазинов рядом', b3p: 'Магазины во всех районах города, открыты до полуночи.',
+    b4t: 'Честные цены и акции', b4p: 'Регулярные скидки на смеси и подгузники для постоянных клиентов.',
+    instaTitle: 'Мы в <em>@pepito_uz</em>',
+    instaSub: 'Акции, новинки, обзоры смесей и полезные советы для родителей — каждый день в наших сторис и рилсах.',
+    insta1: 'подписчиков', insta2: 'публикаций', insta3: 'магазинов', instaBtn: 'Подписаться',
+    eyeBranches: 'Адреса', branchesTitle: 'Наши <em>магазины</em>',
+    brShoyx: 'Шайхантахурский район, Кокча дарвоза, 335 (ориентир — мечеть Кокча)',
+    brSergeli: 'Сергели, массив 7, дом 65 (1-й этаж)',
+    brUchtepa: 'Учтепинский район, 13-й квартал, 6Б',
+    brKhirmon: 'Чиланзарский район, 1-й проезд Хирмонтепа, 34В',
+    brMoreT: 'И ещё 13 магазинов', brMoreP: 'Полный список адресов уточняйте в контакт-центре: +998 78 555-04-00',
+    ctaT: 'Нужна помощь с выбором?', ctaP: 'Позвоните — наши консультанты подберут смесь, подгузники и всё нужное под возраст вашего малыша.',
+    footAbout: 'Сеть магазинов детских товаров в Ташкенте',
+    footContacts: 'Контакты', footHours: 'Режим работы',
+    footDaily: 'Ежедневно: 09:00 — 00:00', footBranches: 'Адреса магазинов',
+    cartTitle: '🛒 Ваша корзина',
+    cartEmpty: 'Корзина пока пуста', cartEmptySub: 'Добавьте товары из каталога',
+    add: 'В корзину', sum: 'сум', total: 'Итого:',
+    namePh: 'Ваше имя', phonePh: 'Телефон (+998 …)', addrPh: 'Адрес доставки',
+    checkout: 'Оформить заказ', checkoutTg: 'Нажмите кнопку внизу, чтобы отправить заказ',
+    orderOkT: 'Заказ принят!', orderOkP: 'Мы свяжемся с вами для подтверждения. Спасибо, что выбираете pepito!',
+    fillFields: 'Заполните имя и телефон',
+    added: 'Добавлено в корзину',
+    all: 'Все',
+  },
+  uz: {
+    cart: 'Savat',
+    heroTitle: 'Kichkintoyingiz uchun *barcha mahsulotlar* bir joyda!',
+    heroSub: 'Smes, bo‘tqa, taglik, parvarish vositalari va aksessuarlar. Toshkent bo‘ylab 17 ta do‘kon va uyga yetkazib berish — har kuni 09:00 dan 00:00 gacha.',
+    toCatalog: 'Katalogga o‘tish',
+    badgeDelivery: 'Toshkent bo‘ylab yetkazib berish', badgeStores: '17 ta do‘kon',
+    st1: 'Toshkentdagi do‘konlar', st2: 'Instagram obunachilari', st3: 'kichkintoylar uchun mahsulot', st4: 'har kuni ochiq',
+    eyeCatalog: 'Katalog', catalogTitle: 'Kichkintoyingizga kerak <em>hamma narsa</em>',
+    eyeWhy: 'Nega biz', whyTitle: 'Ota-onalar <em>pepito</em>ni tanlaydi',
+    b1t: 'Original mahsulotlar', b1p: 'Brendlarning rasmiy distribyutorlari bilan to‘g‘ridan-to‘g‘ri ishlaymiz.',
+    b2t: 'Tez yetkazib berish', b2p: 'Buyurtmani xuddi shu kuni Toshkent bo‘ylab yetkazamiz.',
+    b3t: 'Yaqiningizdagi 17 ta do‘kon', b3p: 'Do‘konlar shaharning barcha tumanlarida, yarim tungacha ochiq.',
+    b4t: 'Halol narxlar va aksiyalar', b4p: 'Doimiy mijozlar uchun smes va tagliklarga muntazam chegirmalar.',
+    instaTitle: 'Biz <em>@pepito_uz</em>da',
+    instaSub: 'Aksiyalar, yangi mahsulotlar, smes obzorlari va ota-onalar uchun foydali maslahatlar — har kuni storis va rilslarimizda.',
+    insta1: 'obunachi', insta2: 'post', insta3: 'do‘kon', instaBtn: 'Obuna bo‘lish',
+    eyeBranches: 'Manzillar', branchesTitle: 'Bizning <em>do‘konlar</em>',
+    brShoyx: 'Shayxontohur tumani, Ko‘kcha darvoza, 335 (mo‘ljal — Ko‘kcha masjidi)',
+    brSergeli: 'Sergeli, 7-mavze, 65-uy (1-qavat)',
+    brUchtepa: 'Uchtepa tumani, 13-kvartal, 6B',
+    brKhirmon: 'Chilonzor tumani, Xirmontepa 1-tor ko‘chasi, 34V',
+    brMoreT: 'Yana 13 ta do‘kon', brMoreP: 'Manzillarning to‘liq ro‘yxati uchun aloqa markaziga qo‘ng‘iroq qiling: +998 78 555-04-00',
+    ctaT: 'Tanlashda yordam kerakmi?', ctaP: 'Qo‘ng‘iroq qiling — maslahatchilarimiz kichkintoyingiz yoshiga mos smes, taglik va kerakli hamma narsani tanlab beradi.',
+    footAbout: 'Toshkentdagi bolalar mahsulotlari do‘konlar tarmog‘i',
+    footContacts: 'Aloqa', footHours: 'Ish vaqti',
+    footDaily: 'Har kuni: 09:00 — 00:00', footBranches: 'Do‘konlar manzillari',
+    cartTitle: '🛒 Sizning savatingiz',
+    cartEmpty: 'Savat hozircha bo‘sh', cartEmptySub: 'Katalogdan mahsulot qo‘shing',
+    add: 'Savatga', sum: 'so‘m', total: 'Jami:',
+    namePh: 'Ismingiz', phonePh: 'Telefon (+998 …)', addrPh: 'Yetkazib berish manzili',
+    checkout: 'Buyurtma berish', checkoutTg: 'Buyurtmani yuborish uchun pastdagi tugmani bosing',
+    orderOkT: 'Buyurtma qabul qilindi!', orderOkP: 'Tasdiqlash uchun siz bilan bog‘lanamiz. pepito’ni tanlaganingiz uchun rahmat!',
+    fillFields: 'Ism va telefonni to‘ldiring',
+    added: 'Savatga qo‘shildi',
+    all: 'Hammasi',
+  }
+};
+let lang = localStorage.getItem('pepito_lang') || 'ru';
+const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.ru[k] || k;
+
+/* ================= catalog data ================= */
+const CATS = [
+  { id: 'food',    ru: 'Смеси и каши', uz: 'Smes va bo‘tqa', ic: '🍼' },
+  { id: 'diapers', ru: 'Подгузники', uz: 'Tagliklar',  ic: '🩲' },
+  { id: 'hygiene', ru: 'Уход и гигиена', uz: 'Parvarish', ic: '🧴' },
+  { id: 'feeding', ru: 'Кормление',  uz: 'Ovqatlantirish', ic: '🥣' },
+  { id: 'toys',    ru: 'Игрушки',    uz: 'O‘yinchoqlar', ic: '🪀' },
+  { id: 'moms',    ru: 'Для мам',    uz: 'Onalar uchun', ic: '🤱' },
+];
+
+const PRODUCTS = [
+  { id: 1,  cat: 'food',    ic: '🥛', brand: 'NAN',       ru: 'NAN 1 Optipro, смесь 800 г',            uz: 'NAN 1 Optipro, aralashma 800 g',        price: 185000 },
+  { id: 2,  cat: 'food',    ic: '🥛', brand: 'Nutrilon',  ru: 'Nutrilon Premium 1, 600 г',             uz: 'Nutrilon Premium 1, 600 g',             price: 165000, old: 189000 },
+  { id: 3,  cat: 'food',    ic: '🥣', brand: 'Heinz',     ru: 'Каша овсяная с яблоком, 200 г',         uz: 'Olma qo‘shilgan suli bo‘tqasi, 200 g', price: 32000 },
+  { id: 4,  cat: 'food',    ic: '🍎', brand: 'Hipp',      ru: 'Пюре яблочное органик, 90 г',           uz: 'Organik olma pyuresi, 90 g',            price: 18000 },
+  { id: 5,  cat: 'food',    ic: '🥩', brand: 'Gerber',    ru: 'Пюре индейка с овощами, 130 г',         uz: 'Kurka go‘shti va sabzavot pyuresi, 130 g', price: 26000 },
+  { id: 6,  cat: 'food',    ic: '🧃', brand: 'Fleur Alpine', ru: 'Сок яблоко-груша, 200 мл',           uz: 'Olma-nok sharbati, 200 ml',             price: 15000 },
+  { id: 7,  cat: 'diapers', ic: '🩲', brand: 'Pampers',   ru: 'Premium Care 4 (9–14 кг), 52 шт',       uz: 'Premium Care 4 (9–14 kg), 52 dona',     price: 175000, old: 199000 },
+  { id: 8,  cat: 'diapers', ic: '🩲', brand: 'Huggies',   ru: 'Elite Soft 3 (5–9 кг), 72 шт',          uz: 'Elite Soft 3 (5–9 kg), 72 dona',        price: 195000 },
+  { id: 9,  cat: 'diapers', ic: '🩲', brand: 'Joonies',   ru: 'Premium Soft M (6–11 кг), 58 шт',       uz: 'Premium Soft M (6–11 kg), 58 dona',     price: 145000 },
+  { id: 10, cat: 'diapers', ic: '🩲', brand: 'Moony',     ru: 'Трусики L (9–14 кг), 44 шт',            uz: 'Trusik L (9–14 kg), 44 dona',           price: 210000 },
+  { id: 11, cat: 'diapers', ic: '🩲', brand: 'YoYo',      ru: 'Подгузники 5 (11–25 кг), 40 шт',        uz: 'Tagliklar 5 (11–25 kg), 40 dona',       price: 89000 },
+  { id: 12, cat: 'hygiene', ic: '🧴', brand: "Johnson's", ru: 'Шампунь детский «Нет слёз», 300 мл',    uz: 'Bolalar shampuni «Ko‘z yoshsiz», 300 ml', price: 42000 },
+  { id: 13, cat: 'hygiene', ic: '🧻', brand: 'Pampers',   ru: 'Влажные салфетки Sensitive, 80 шт',     uz: 'Nam salfetkalar Sensitive, 80 dona',    price: 28000 },
+  { id: 14, cat: 'hygiene', ic: '🧴', brand: 'Bepanthen', ru: 'Крем под подгузник, 100 г',             uz: 'Taglik osti kremi, 100 g',              price: 95000 },
+  { id: 15, cat: 'hygiene', ic: '🛁', brand: 'Bübchen',   ru: 'Пенка для купания, 400 мл',             uz: 'Cho‘milish ko‘pigi, 400 ml',   price: 55000 },
+  { id: 16, cat: 'hygiene', ic: '💧', brand: 'Aqua Baby', ru: 'Вода детская питьевая, 5 л',            uz: 'Bolalar ichimlik suvi, 5 l',            price: 12000 },
+  { id: 17, cat: 'feeding', ic: '🍼', brand: 'Avent',     ru: 'Бутылочка Natural, 260 мл',             uz: 'Natural shishasi, 260 ml',              price: 98000 },
+  { id: 18, cat: 'feeding', ic: '🍼', brand: 'Chicco',    ru: 'Соска-пустышка Physio, 6м+',            uz: 'Physio so‘rg‘ichi, 6 oy+',      price: 45000 },
+  { id: 19, cat: 'feeding', ic: '🥣', brand: 'Twistshake',ru: 'Тарелка на присоске + ложка',           uz: 'So‘rg‘ichli tarelka + qoshiq', price: 65000 },
+  { id: 20, cat: 'feeding', ic: '🪑', brand: 'Baby Care', ru: 'Стульчик для кормления',                uz: 'Ovqatlantirish stulchasi',              price: 590000, old: 690000 },
+  { id: 21, cat: 'toys',    ic: '🧸', brand: 'pepito',    ru: 'Мишка плюшевый, 35 см',                 uz: 'Plyush ayiqcha, 35 sm',                 price: 85000 },
+  { id: 22, cat: 'toys',    ic: '🪀', brand: 'Fisher-Price', ru: 'Погремушка-прорезыватель',           uz: 'Shildiroq-tishkavlagich',               price: 52000 },
+  { id: 23, cat: 'toys',    ic: '🧩', brand: 'Mega Bloks',ru: 'Конструктор 60 деталей',                uz: 'Konstruktor 60 detal',                  price: 120000 },
+  { id: 24, cat: 'moms',    ic: '🤱', brand: 'Medela',    ru: 'Молокоотсос ручной Harmony',            uz: 'Harmony qo‘l sut so‘rg‘ichi', price: 450000 },
+  { id: 25, cat: 'moms',    ic: '🧷', brand: 'Dr. Brown’s', ru: 'Прокладки для груди, 60 шт',     uz: 'Ko‘krak prokladkalari, 60 dona',    price: 48000 },
+  { id: 26, cat: 'moms',    ic: '🎒', brand: 'pepito',    ru: 'Сумка для мамы на коляску',             uz: 'Aravachaga onalar sumkasi',             price: 160000 },
+];
+
+const BRANDS = ['NAN', 'Nutrilon', 'Pampers', 'Huggies', 'Hipp', 'Heinz', 'Gerber', 'Moony', 'Joonies', 'Avent', 'Chicco', 'Medela', 'Bübchen', "Johnson's"];
+
+/* ================= telegram ================= */
+const tg = window.Telegram && window.Telegram.WebApp;
+const inTelegram = !!(tg && tg.initData);
+if (inTelegram) {
+  document.body.classList.add('tg-app');
+  tg.ready();
+  tg.expand();
+  if (tg.setHeaderColor) try { tg.setHeaderColor('#f7f7fd'); } catch (e) {}
+}
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= state ================= */
+let cart = {};
+try { cart = JSON.parse(localStorage.getItem('pepito_cart') || '{}'); } catch (e) { cart = {}; }
+let activeCat = 'all';
+let orderDone = false;
+
+const fmt = (n) => n.toLocaleString('ru-RU');
+const cartQty = () => Object.values(cart).reduce((s, q) => s + q, 0);
+const cartTotal = () => Object.entries(cart).reduce((s, [id, q]) => {
+  const p = PRODUCTS.find(x => x.id === +id);
+  return s + (p ? p.price * q : 0);
+}, 0);
+const saveCart = () => localStorage.setItem('pepito_cart', JSON.stringify(cart));
+
+/* ================= i18n render ================= */
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.getElementById('langBtn').textContent = lang === 'ru' ? 'UZ' : 'RU';
+  document.documentElement.lang = lang;
+  renderHeroTitle();
+}
+
+/* hero headline: word-by-word rise, *marked* words highlighted */
+let heroPlayed = false;
+function renderHeroTitle() {
+  const h = document.getElementById('heroTitle');
+  h.innerHTML = '';
+  h.classList.remove('done');
+  const src = t('heroTitle');
+  let hl = false;
+  src.split(' ').forEach((word, i) => {
+    let content = word, starts = false, ends = false;
+    if (content.startsWith('*')) { starts = true; content = content.slice(1); }
+    if (content.endsWith('*')) { ends = true; content = content.slice(0, -1); }
+    if (starts) hl = true;
+    const span = document.createElement('span');
+    span.className = 'w' + (hl ? ' hl' : '');
+    span.textContent = content;
+    span.style.transitionDelay = heroPlayed ? '0s' : (0.25 + i * 0.07) + 's';
+    h.appendChild(span);
+    h.appendChild(document.createTextNode(' '));
+    if (ends) hl = false;
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    h.querySelectorAll('.w').forEach(w => w.classList.add('in'));
+    setTimeout(() => h.classList.add('done'), heroPlayed ? 100 : 1100);
+    heroPlayed = true;
+  }));
+}
+
+/* ================= marquee & feed ================= */
+function buildMarquee() {
+  const track = document.getElementById('marqueeTrack');
+  const half = BRANDS.map(b => '<span>' + b + '</span>').join('');
+  track.innerHTML = half + half; /* duplicated for seamless loop */
+}
+function buildFeed() {
+  const feed = document.getElementById('feed');
+  const posts = ['🍼', '🧸', '🩲', '🛁', '👶', '🥣'];
+  const grads = [
+    'linear-gradient(135deg,#eaf1fd,#d9e7fb)', 'linear-gradient(135deg,#efeaff,#e0d8fa)',
+    'linear-gradient(135deg,#e7f6ef,#d5eee2)', 'linear-gradient(135deg,#fdeef2,#f8dce4)',
+    'linear-gradient(135deg,#fff3e0,#fde7c8)', 'linear-gradient(135deg,#e8f7fa,#d4eef4)',
+  ];
+  const likes = ['1 240', '986', '2 105', '1 764', '873', '1 431'];
+  const one = posts.map((p, i) =>
+    '<div class="post"><div class="post-img" style="background:' + grads[i] + '">' + p + '</div>' +
+    '<div class="post-row"><span class="heart">♥</span> ' + likes[i] + ' · pepito_uz</div></div>'
+  ).join('');
+  feed.innerHTML = one + one; /* duplicated for seamless loop */
+}
+
+/* ================= canvas: floating brand flowers ================= */
+function initFX() {
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  let W, H, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const N = 22;
+  const petals = [];
+  let mx = 0, my = 0, tx = 0, ty = 0;
+
+  function resize() {
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < N; i++) {
+    petals.push({
+      x: Math.sin(i * 999) * .5 + .5,      /* deterministic pseudo-random */
+      y: Math.sin(i * 777 + 3) * .5 + .5,
+      r: 8 + (Math.sin(i * 555) * .5 + .5) * 22,
+      sp: .12 + (Math.sin(i * 333) * .5 + .5) * .25,
+      sway: Math.sin(i * 111) * 24,
+      ph: i * 1.7,
+      o: .05 + (Math.sin(i * 222) * .5 + .5) * .10,
+      depth: .3 + (Math.sin(i * 444) * .5 + .5) * .7,
+    });
+  }
+
+  function flower(x, y, r, rot) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    ctx.beginPath();
+    for (let a = 0; a < 4; a++) {
+      const ang = a * Math.PI / 2;
+      ctx.moveTo(Math.cos(ang) * r * .46 + r * .38, Math.sin(ang) * r * .46);
+      ctx.arc(Math.cos(ang) * r * .46, Math.sin(ang) * r * .46, r * .38, 0, Math.PI * 2);
+    }
+    ctx.moveTo(r * .34, 0);
+    ctx.arc(0, 0, r * .34, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  let time = 0;
+  function frame() {
+    time += 1 / 60;
+    tx += (mx - tx) * .04; ty += (my - ty) * .04;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#ffffff';
+    petals.forEach(p => {
+      const yy = ((p.y - time * p.sp * .05) % 1 + 1) % 1;
+      const x = p.x * W + Math.sin(time * .5 + p.ph) * p.sway + tx * p.depth * 30;
+      const y = yy * (H + 120) - 60 + ty * p.depth * 30;
+      ctx.globalAlpha = p.o;
+      flower(x, y, p.r, time * .2 * (p.depth > .6 ? 1 : -1) + p.ph);
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('pointermove', e => {
+    mx = (e.clientX / window.innerWidth - .5) * 2;
+    my = (e.clientY / window.innerHeight - .5) * 2;
+  });
+
+  if (reducedMotion) { time = 4; tx = 0; ty = 0;
+    ctx.fillStyle = '#ffffff';
+    petals.forEach(p => { ctx.globalAlpha = p.o; flower(p.x * W, p.y * H, p.r, p.ph); });
+  } else {
+    frame();
+  }
+}
+
+/* ================= reveal on scroll ================= */
+function initReveal() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+        en.target.querySelectorAll('.count').forEach(runCounter);
+        if (en.target.querySelector && en.target.classList.contains('stat')) {} /* handled above */
+      }
+    });
+  }, { threshold: .18 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+}
+
+/* count-up */
+function runCounter(el) {
+  if (el.dataset.doneCount) return;
+  el.dataset.doneCount = '1';
+  const to = +el.dataset.to;
+  if (reducedMotion) { el.textContent = fmt(to); return; }
+  const dur = 1400, t0 = performance.now();
+  (function tick(now) {
+    const k = Math.min((now - t0) / dur, 1);
+    el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - k, 3))));
+    if (k < 1) requestAnimationFrame(tick);
+  })(performance.now());
+}
+
+/* ================= catalog render ================= */
+function renderCats() {
+  const box = document.getElementById('cats');
+  box.innerHTML = '';
+  const mk = (id, label, ic) => {
+    const b = document.createElement('button');
+    b.className = 'cat-chip' + (activeCat === id ? ' active' : '');
+    b.innerHTML = (ic ? ic + ' ' : '') + label;
+    b.onclick = () => { activeCat = id; renderCats(); renderGrid(true); };
+    return b;
+  };
+  box.appendChild(mk('all', t('all'), '✨'));
+  CATS.forEach(c => box.appendChild(mk(c.id, c[lang] || c.ru, c.ic)));
+}
+
+function renderGrid(animate) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  PRODUCTS.filter(p => activeCat === 'all' || p.cat === activeCat).forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    if (animate && !reducedMotion) {
+      card.style.animation = 'fadeUp .5s ' + Math.min(i * .04, .4) + 's ' + 'cubic-bezier(.22,1,.36,1) both';
+    }
+    const sale = p.old ? '<span class="sale-tag">−' + Math.round((1 - p.price / p.old) * 100) + '%</span>' : '';
+    const oldHtml = p.old ? '<span class="old">' + fmt(p.old) + '</span>' : '';
+    card.innerHTML =
+      sale +
+      '<div class="pic"><span class="emoji">' + p.ic + '</span></div>' +
+      '<div class="brand">' + p.brand + '</div>' +
+      '<div class="name">' + (p[lang] || p.ru) + '</div>' +
+      '<div class="price-row"><span class="price">' + fmt(p.price) + ' <small>' + t('sum') + '</small></span>' + oldHtml + '</div>';
+    card.appendChild(buildQtyControl(p.id, card));
+    grid.appendChild(card);
+  });
+}
+
+function buildQtyControl(id, card) {
+  const holder = document.createElement('div');
+  const draw = () => {
+    holder.innerHTML = '';
+    const q = cart[id] || 0;
+    if (q === 0) {
+      const b = document.createElement('button');
+      b.className = 'add-btn';
+      b.textContent = t('add');
+      b.onclick = () => { changeQty(id, 1); draw(); flyToCart(card, id); showToast(t('added')); };
+      holder.appendChild(b);
+    } else {
+      const row = document.createElement('div');
+      row.className = 'qty-row';
+      const minus = document.createElement('button');
+      minus.textContent = '−';
+      minus.onclick = () => { changeQty(id, -1); draw(); };
+      const count = document.createElement('span');
+      count.textContent = q;
+      const plus = document.createElement('button');
+      plus.textContent = '+';
+      plus.onclick = () => { changeQty(id, 1); draw(); flyToCart(card, id); };
+      row.append(minus, count, plus);
+      holder.appendChild(row);
+    }
+  };
+  draw();
+  return holder;
+}
+
+/* fly-to-cart animation */
+function flyToCart(card, id) {
+  if (reducedMotion || !card) return;
+  const p = PRODUCTS.find(x => x.id === +id);
+  const pic = card.querySelector('.pic');
+  const target = document.getElementById('cartOpenBtn');
+  if (!pic || !target) return;
+  const a = pic.getBoundingClientRect();
+  const b = target.getBoundingClientRect();
+  const el = document.createElement('span');
+  el.className = 'fly';
+  el.textContent = p.ic;
+  el.style.left = (a.left + a.width / 2 - 20) + 'px';
+  el.style.top = (a.top + a.height / 2 - 20) + 'px';
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.style.transform = 'translate(' + (b.left + b.width / 2 - (a.left + a.width / 2)) + 'px,' +
+      (b.top + b.height / 2 - (a.top + a.height / 2)) + 'px) scale(.15) rotate(40deg)';
+    el.style.opacity = '.2';
+  }));
+  setTimeout(() => {
+    el.remove();
+    const cc = document.getElementById('cartCount');
+    cc.classList.remove('pop'); void cc.offsetWidth; cc.classList.add('pop');
+  }, 780);
+}
+
+function changeQty(id, d) {
+  cart[id] = (cart[id] || 0) + d;
+  if (cart[id] <= 0) delete cart[id];
+  saveCart();
+  updateCartBadge();
+  if (inTelegram && tg.HapticFeedback) try { tg.HapticFeedback.impactOccurred('light'); } catch (e) {}
+  updateMainButton();
+}
+
+function updateCartBadge() {
+  const el = document.getElementById('cartCount');
+  const q = cartQty();
+  el.textContent = q;
+  el.classList.toggle('show', q > 0);
+}
+
+/* ================= cart drawer ================= */
+const drawer = document.getElementById('drawer');
+const overlay = document.getElementById('overlay');
+
+function openCart() { orderDone = false; renderCart(); drawer.classList.add('open'); overlay.classList.add('open'); }
+function closeCart() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+
+function renderCart() {
+  const body = document.getElementById('drawerBody');
+  const foot = document.getElementById('drawerFoot');
+  const ids = Object.keys(cart);
+
+  if (orderDone) {
+    body.innerHTML = '<div class="order-ok"><span class="ic">🎉</span><b>' + t('orderOkT') + '</b><p>' + t('orderOkP') + '</p></div>';
+    foot.innerHTML = '';
+    return;
+  }
+
+  if (ids.length === 0) {
+    body.innerHTML = '<div class="cart-empty"><span class="ic">🧺</span><p><b>' + t('cartEmpty') + '</b></p><p>' + t('cartEmptySub') + '</p></div>';
+    foot.innerHTML = '';
+    return;
+  }
+
+  body.innerHTML = '';
+  ids.forEach((id, i) => {
+    const p = PRODUCTS.find(x => x.id === +id);
+    if (!p) return;
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+    row.style.animationDelay = (i * .05) + 's';
+    row.innerHTML =
+      '<div class="pic">' + p.ic + '</div>' +
+      '<div class="info"><b>' + (p[lang] || p.ru) + '</b><span>' + fmt(p.price) + ' ' + t('sum') + '</span></div>';
+    const qr = document.createElement('div');
+    qr.className = 'qty-row';
+    const minus = document.createElement('button');
+    minus.textContent = '−';
+    minus.onclick = () => { changeQty(p.id, -1); renderCart(); renderGrid(); };
+    const count = document.createElement('span');
+    count.textContent = cart[id];
+    const plus = document.createElement('button');
+    plus.textContent = '+';
+    plus.onclick = () => { changeQty(p.id, 1); renderCart(); };
+    qr.append(minus, count, plus);
+    row.appendChild(qr);
+    body.appendChild(row);
+  });
+
+  foot.innerHTML =
+    '<div class="total-row"><span>' + t('total') + '</span><span>' + fmt(cartTotal()) + ' ' + t('sum') + '</span></div>' +
+    '<div class="field"><input id="fName" placeholder="' + t('namePh') + '" autocomplete="name"></div>' +
+    '<div class="field"><input id="fPhone" placeholder="' + t('phonePh') + '" inputmode="tel" autocomplete="tel"></div>' +
+    '<div class="field"><input id="fAddr" placeholder="' + t('addrPh') + '" autocomplete="street-address"></div>';
+
+  if (inTelegram) {
+    const hint = document.createElement('p');
+    hint.style.cssText = 'text-align:center;font-size:13px;color:var(--ink-soft)';
+    hint.textContent = t('checkoutTg');
+    foot.appendChild(hint);
+    updateMainButton();
+  } else {
+    const b = document.createElement('button');
+    b.className = 'btn checkout-btn';
+    b.textContent = t('checkout');
+    b.onclick = submitOrder;
+    foot.appendChild(b);
+  }
+}
+
+function buildOrderPayload() {
+  const items = Object.entries(cart).map(([id, q]) => {
+    const p = PRODUCTS.find(x => x.id === +id);
+    return { id: p.id, name: p.ru, brand: p.brand, qty: q, price: p.price };
+  });
+  return {
+    source: inTelegram ? 'telegram-mini-app' : 'website',
+    name: (document.getElementById('fName') || {}).value || '',
+    phone: (document.getElementById('fPhone') || {}).value || '',
+    address: (document.getElementById('fAddr') || {}).value || '',
+    items,
+    total: cartTotal(),
+  };
+}
+
+function submitOrder() {
+  const order = buildOrderPayload();
+  if (!order.name.trim() || !order.phone.trim()) { showToast(t('fillFields')); return; }
+
+  if (inTelegram) {
+    try { tg.sendData(JSON.stringify(order)); } catch (e) {}
+    if (tg.HapticFeedback) try { tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
+  } else {
+    const lines = order.items.map(i => '• ' + i.brand + ' ' + i.name + ' × ' + i.qty + ' = ' + fmt(i.price * i.qty));
+    const text = '💜 Заказ pepito\n' + lines.join('\n') +
+      '\nИтого: ' + fmt(order.total) + ' сум' +
+      '\nИмя: ' + order.name + '\nТелефон: ' + order.phone +
+      (order.address ? '\nАдрес: ' + order.address : '');
+    window.open('https://t.me/share/url?url=' + encodeURIComponent('https://t.me/pepito_uz') + '&text=' + encodeURIComponent(text), '_blank');
+  }
+
+  cart = {};
+  saveCart();
+  updateCartBadge();
+  renderGrid();
+  orderDone = true;
+  renderCart();
+  updateMainButton();
+}
+
+/* ================= telegram main button ================= */
+function updateMainButton() {
+  if (!inTelegram || !tg.MainButton) return;
+  const q = cartQty();
+  if (q > 0 && drawer.classList.contains('open') && !orderDone) {
+    tg.MainButton.setText(t('checkout') + ' · ' + fmt(cartTotal()) + ' ' + t('sum'));
+    tg.MainButton.show();
+  } else if (q > 0 && !drawer.classList.contains('open')) {
+    tg.MainButton.setText('🛒 ' + t('cart') + ' (' + q + ')');
+    tg.MainButton.show();
+  } else {
+    tg.MainButton.hide();
+  }
+}
+if (inTelegram && tg.MainButton) {
+  tg.onEvent('mainButtonClicked', () => {
+    if (drawer.classList.contains('open')) submitOrder();
+    else openCart();
+    updateMainButton();
+  });
+}
+
+/* ================= misc ================= */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+document.getElementById('cartOpenBtn').onclick = () => { openCart(); updateMainButton(); };
+document.getElementById('cartCloseBtn').onclick = () => { closeCart(); updateMainButton(); };
+overlay.onclick = () => { closeCart(); updateMainButton(); };
+document.getElementById('langBtn').onclick = () => {
+  lang = lang === 'ru' ? 'uz' : 'ru';
+  localStorage.setItem('pepito_lang', lang);
+  applyI18n(); renderCats(); renderGrid();
+  if (drawer.classList.contains('open')) renderCart();
+  updateMainButton();
+};
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* header shadow + progress */
+window.addEventListener('scroll', () => {
+  document.getElementById('header').classList.toggle('scrolled', window.scrollY > 12);
+  const h = document.documentElement;
+  const max = h.scrollHeight - h.clientHeight;
+  document.getElementById('progress').style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+}, { passive: true });
+
+/* preloader */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('preloader').classList.add('done'), reducedMotion ? 0 : 900);
+});
+setTimeout(() => document.getElementById('preloader').classList.add('done'), 2500); /* safety */
+
+/* ================= boot ================= */
+applyI18n();
+buildMarquee();
+buildFeed();
+renderCats();
+renderGrid();
+updateCartBadge();
+updateMainButton();
+initReveal();
+initFX();
+</script>
+</body>
+</html>
