@@ -5,45 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Бюджет месяца</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: одна колонка-«кошелёк»: сводка сверху, группы конвертов ниже, нижняя шторка для списания */
+/* Layout: одна спокойная колонка: остаток сверху, ниже простые списки «название — остаток» */
 :root {
-  --bg: #eef1ef;
+  --bg: #f4f5f3;
   --surface: #ffffff;
-  --ink: #17221e;
-  --muted: #64716b;
-  --line: #d9e0dc;
-  --accent: #0f6b55;
+  --ink: #1d211f;
+  --muted: #7a817d;
+  --line: #ebedeb;
+  --accent: #2f7a63;
   --accent-ink: #ffffff;
-  --accent-soft: #dcebe5;
-  --warn: #b46a00;
-  --warn-soft: #f6e8cf;
-  --bad: #b3261e;
-  --bad-soft: #f6dcd9;
-  --track: #e3e8e5;
-  --scrim: rgba(10, 20, 16, .42);
-  --font-display: "Unbounded", "Manrope", system-ui, sans-serif;
-  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-num: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --accent-soft: #e6f0ec;
+  --warn: #b7791f;
+  --bad: #c0392b;
+  --scrim: rgba(20, 24, 22, .35);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f1513; --surface: #18201d; --ink: #e6ede9; --muted: #93a19a; --line: #29332f;
-    --accent: #4fc29f; --accent-ink: #06231a; --accent-soft: #1d3a31;
-    --warn: #f0b04c; --warn-soft: #3a2d15; --bad: #ff8a80; --bad-soft: #3d1d1b;
-    --track: #25302c; --scrim: rgba(0, 0, 0, .6);
+    --bg: #121413; --surface: #1c1f1d; --ink: #e9ece9; --muted: #8d958f; --line: #2a2e2b;
+    --accent: #5bb894; --accent-ink: #0d1f18; --accent-soft: #1f3129;
+    --warn: #e0a84a; --bad: #f07a6c; --scrim: rgba(0, 0, 0, .55);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f1513; --surface: #18201d; --ink: #e6ede9; --muted: #93a19a; --line: #29332f;
-  --accent: #4fc29f; --accent-ink: #06231a; --accent-soft: #1d3a31;
-  --warn: #f0b04c; --warn-soft: #3a2d15; --bad: #ff8a80; --bad-soft: #3d1d1b;
-  --track: #25302c; --scrim: rgba(0, 0, 0, .6);
+  --bg: #121413; --surface: #1c1f1d; --ink: #e9ece9; --muted: #8d958f; --line: #2a2e2b;
+  --accent: #5bb894; --accent-ink: #0d1f18; --accent-soft: #1f3129;
+  --warn: #e0a84a; --bad: #f07a6c; --scrim: rgba(0, 0, 0, .55);
   color-scheme: dark;
 }
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -51,162 +41,122 @@
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--ink);
-  font: 15px/1.45 var(--font-body);
+  font: 17px/1.4 var(--font);
+  font-variant-numeric: tabular-nums;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 20px 120px;
+  padding-block: 28px 64px;
   -webkit-tap-highlight-color: transparent;
 }
 [hidden] { display: none !important; }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.wrap { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 
-/* Сводка */
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.month {
-  font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em;
-  background: none; border: 0; padding: 4px 0; text-align: left; min-width: 0;
-}
-.month small { display: block; font: 600 11px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.ghost {
-  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
-  padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap;
-}
-.summary {
-  background: var(--accent); color: var(--accent-ink); border-radius: 22px;
-  padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 14px;
-}
-.summary .label { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
-.summary .big { font-size: clamp(30px, 9vw, 40px); font-weight: 700; line-height: 1.05; overflow-wrap: anywhere; }
-.summary .big span { font-family: var(--font-body); font-size: 15px; font-weight: 600; opacity: .8; margin-left: 6px; letter-spacing: 0; }
-.summary .bar { height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--accent-ink) 22%, transparent); overflow: hidden; }
-.summary .bar i { display: block; height: 100%; background: var(--accent-ink); border-radius: 99px; transition: width .3s; }
-.summary .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; }
-.summary .row b { display: block; font-size: 15px; }
-.summary .row div:last-child { text-align: right; }
+/* Шапка с остатком */
+.head { display: flex; flex-direction: column; gap: 6px; padding: 0 4px; }
+.month { background: none; border: 0; padding: 0; text-align: left; font-size: 17px; font-weight: 600; color: var(--muted); align-self: flex-start; }
+.left-total { font-size: 42px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.left-total small { font-size: 20px; font-weight: 600; color: var(--muted); margin-left: 6px; letter-spacing: 0; }
+.of-total { color: var(--muted); font-size: 16px; }
+.bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 10px; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+.status { font-size: 14px; color: var(--muted); }
 
 /* Группы */
-.group { display: flex; flex-direction: column; gap: 8px; }
-.ghead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 4px; }
-.ghead h2 { margin: 0; font: 600 12px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.ghead .num { font-size: 12px; color: var(--muted); }
-.list { background: var(--surface); border-radius: 18px; border: 1px solid var(--line); overflow: hidden; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.ghead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 0 4px; }
+.ghead h2 { margin: 0; font-size: 20px; font-weight: 700; }
+.ghead span { color: var(--muted); font-size: 15px; white-space: nowrap; }
+.list { background: var(--surface); border-radius: 16px; overflow: hidden; }
 .cat {
-  display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center;
-  width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line);
-  padding: 13px 16px 14px;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  width: 100%; min-height: 60px; padding: 14px 18px;
+  background: none; border: 0; border-top: 1px solid var(--line); text-align: left;
 }
 .cat:first-child { border-top: 0; }
 .cat:active { background: var(--accent-soft); }
-.cat .name { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
-.cat .left { font-weight: 700; font-size: 15px; text-align: right; }
-.cat .meta { font-size: 12px; color: var(--muted); }
-.cat .of { font-size: 12px; color: var(--muted); text-align: right; }
-.cat .track { grid-column: 1 / -1; height: 5px; border-radius: 99px; background: var(--track); overflow: hidden; margin-top: 4px; }
-.cat .track i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
-.cat.low .left { color: var(--warn); } .cat.low .track i { background: var(--warn); }
-.cat.over .left { color: var(--bad); } .cat.over .track i { background: var(--bad); }
-.cat.done .name, .cat.done .left { color: var(--muted); }
-.cat.done .track i { background: var(--muted); }
-.pill { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 2px; }
-.pill.over { background: var(--bad-soft); color: var(--bad); }
-.pill.done { background: var(--track); color: var(--muted); }
-.addcat { width: 100%; background: none; border: 0; border-top: 1px dashed var(--line); padding: 12px 16px; text-align: left; color: var(--accent); font-weight: 600; font-size: 14px; }
+.cat .name { min-width: 0; overflow-wrap: anywhere; }
+.cat .sum { font-weight: 600; white-space: nowrap; }
+.cat.low .sum { color: var(--warn); }
+.cat.over .sum { color: var(--bad); }
+.cat.done .name, .cat.done .sum { color: var(--muted); }
+.add { width: 100%; min-height: 54px; padding: 14px 18px; background: none; border: 0; border-top: 1px solid var(--line); text-align: left; color: var(--accent); font-weight: 600; }
 
 /* История */
-.hist { background: var(--surface); border-radius: 18px; border: 1px solid var(--line); }
-.op { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 11px 14px; border-top: 1px solid var(--line); }
+.op { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 10px 10px 18px; border-top: 1px solid var(--line); }
 .op:first-child { border-top: 0; }
-.op .what { min-width: 0; }
-.op .what b { font-weight: 600; display: block; overflow-wrap: anywhere; }
-.op .what small { color: var(--muted); font-size: 12px; }
-.op .amt { font-weight: 700; }
+.op .what { flex: 1; min-width: 0; }
+.op .what div { overflow-wrap: anywhere; }
+.op .what small { color: var(--muted); font-size: 14px; }
+.op .amt { font-weight: 600; white-space: nowrap; }
 .op .amt.plus { color: var(--accent); }
-.op button { border: 0; background: var(--track); border-radius: 10px; padding: 6px 10px; font-size: 12px; font-weight: 600; color: var(--muted); }
-.empty { padding: 18px 16px; color: var(--muted); font-size: 14px; }
-.foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.op .undo { border: 0; background: none; color: var(--muted); width: 44px; height: 44px; border-radius: 50%; font-size: 22px; line-height: 1; flex: none; }
+.empty { padding: 18px; color: var(--muted); font-size: 16px; }
+
+.foot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.textbtn { background: none; border: 0; color: var(--muted); font-size: 16px; padding: 12px; }
+.ro .foot, .ro .add { display: none; }
 
 /* Шторка */
 .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 20; }
 .sheet {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 21;
-  background: var(--surface); border-radius: 24px 24px 0 0;
-  padding: 10px max(18px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
-  max-height: 92vh; overflow-y: auto;
-  animation: up .22s ease-out;
+  background: var(--surface); border-radius: 22px 22px 0 0;
+  padding: 24px max(20px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
+  max-height: 90vh; overflow-y: auto;
+  animation: up .2s ease-out;
 }
-@keyframes up { from { transform: translateY(40px); opacity: .4; } }
-@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } .summary .bar i, .cat .track i { transition: none; } }
-.sheet-in { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
-.grab { width: 40px; height: 4px; border-radius: 9px; background: var(--line); margin: 0 auto 4px; }
-.sh-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.sh-title h3 { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 18px; line-height: 1.25; min-width: 0; overflow-wrap: anywhere; }
-.sh-title p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-.x { border: 0; background: var(--track); width: 34px; height: 34px; border-radius: 50%; font-size: 18px; line-height: 1; flex: none; color: var(--muted); }
-.amount {
-  display: flex; align-items: baseline; gap: 8px; border: 2px solid var(--accent); border-radius: 16px; padding: 10px 14px;
-}
-.amount input { border: 0; outline: 0; background: none; width: 100%; min-width: 0; font-family: var(--font-num); font-weight: 700; font-size: 28px; font-variant-numeric: tabular-nums; }
-.amount span { color: var(--muted); font-weight: 600; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chips button { border: 1px solid var(--line); background: var(--bg); border-radius: 99px; padding: 7px 12px; font-family: var(--font-num); font-size: 13px; font-weight: 500; }
-.note { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); width: 100%; }
-.actions { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
-.btn { border: 0; border-radius: 14px; padding: 14px; font-weight: 700; font-size: 15px; }
+@keyframes up { from { transform: translateY(30px); } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } .bar i { transition: none; } }
+.sheet-in { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.sh-title h3 { margin: 0; font-size: 22px; font-weight: 700; overflow-wrap: anywhere; }
+.sh-title p { margin: 4px 0 0; color: var(--muted); font-size: 16px; }
+.amount { display: flex; align-items: baseline; gap: 8px; border-bottom: 2px solid var(--accent); padding: 4px 2px 8px; }
+.amount input { border: 0; outline: 0; background: none; width: 100%; min-width: 0; font-size: 36px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.amount span { color: var(--muted); font-size: 18px; }
+.chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.chips button { border: 0; background: var(--bg); border-radius: 12px; min-height: 48px; font-size: 16px; font-weight: 600; }
+.btn { width: 100%; border: 0; border-radius: 14px; min-height: 56px; font-size: 18px; font-weight: 700; }
 .btn.main { background: var(--accent); color: var(--accent-ink); }
-.btn.sec { background: var(--accent-soft); color: var(--accent); }
-.btn.danger { background: var(--bad-soft); color: var(--bad); }
-.btn:disabled { opacity: .45; cursor: default; }
-.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
-.field input { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--bg); color: var(--ink); font-size: 16px; font-weight: 500; }
-.linkbtn { background: none; border: 0; color: var(--muted); font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; padding: 4px 0; align-self: center; }
-.mini h4 { margin: 4px 0 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.mini .op { padding-inline: 0; }
-.sync { margin: -12px 4px 0; font-size: 12px; color: var(--muted); }
-.ro .foot { display: none; }
+.btn.danger { background: none; color: var(--bad); font-weight: 600; min-height: 48px; }
+.btn:disabled { opacity: .4; cursor: default; }
+.links { display: flex; justify-content: space-between; gap: 12px; }
+.links button { background: none; border: 0; color: var(--muted); font-size: 16px; padding: 10px 2px; }
+.field { display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: var(--muted); }
+.field input { border: 0; border-radius: 12px; padding: 14px; background: var(--bg); color: var(--ink); font-size: 18px; }
+.hint { margin: 0; color: var(--muted); font-size: 15px; }
+
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%); z-index: 30;
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  background: var(--ink); color: var(--bg); border-radius: 14px; padding: 10px 12px 10px 16px;
-  display: flex; gap: 14px; align-items: center; font-size: 14px; font-weight: 600; max-width: calc(100% - 32px);
-  box-shadow: 0 8px 30px rgba(0,0,0,.25);
+  background: var(--ink); color: var(--bg); border-radius: 14px; padding: 8px 8px 8px 18px;
+  display: flex; gap: 10px; align-items: center; font-size: 16px; width: max-content; max-width: calc(100% - 32px);
 }
-.toast button { background: none; border: 0; color: var(--accent-soft); font-weight: 700; padding: 4px 6px; }
+.toast button { background: none; border: 0; color: var(--accent-soft); font-weight: 700; padding: 10px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="top">
-    <button class="month" id="monthBtn" type="button"><small>Расходы</small><span id="monthName">Ноябрь</span></button>
-    <button class="ghost" id="themeBtn" type="button" aria-label="Сменить тему">Тема</button>
+  <header class="head">
+    <button class="month" id="monthBtn" type="button">Ноябрь</button>
+    <div class="left-total" id="sumLeft">0</div>
+    <div class="of-total" id="sumOf"></div>
+    <div class="bar"><i id="sumBar" style="width:0"></i></div>
+    <div class="status" id="syncNote" hidden></div>
   </header>
 
-  <section class="summary" aria-live="polite">
-    <div>
-      <div class="label">Осталось на месяц</div>
-      <div class="big num" id="sumLeft">0</div>
-    </div>
-    <div class="bar"><i id="sumBar" style="width:0"></i></div>
-    <div class="row">
-      <div>Потрачено<b class="num" id="sumSpent">0</b></div>
-      <div>Бюджет<b class="num" id="sumBudget">0</b></div>
-    </div>
-  </section>
-  <p class="sync" id="syncNote">Загружаю…</p>
+  <div id="groups" class="wrap"></div>
 
-  <div id="groups" class="wrap" style="gap:22px"></div>
-
-  <section class="group">
-    <div class="ghead"><h2>Последние списания</h2></div>
-    <div class="hist" id="hist"></div>
+  <section class="group" id="histBox">
+    <div class="ghead"><h2>Последние траты</h2></div>
+    <div class="list" id="hist"></div>
   </section>
 
   <div class="foot">
-    <button class="ghost" id="addGroupBtn" type="button">+ Новая группа</button>
-    <button class="ghost" id="newMonthBtn" type="button">Начать новый месяц</button>
+    <button class="textbtn" id="addGroupBtn" type="button">+ Новая группа</button>
+    <button class="textbtn" id="newMonthBtn" type="button">Начать новый месяц</button>
   </div>
 </div>
 
@@ -311,61 +261,54 @@ button { cursor: pointer; }
   const findCat = id => { for (const g of S.groups) for (const c of g.cats) if (c.id === id) return { g, c }; return null; };
 
   function render() {
-    const note = $("syncNote");
-    note.textContent = mode === "shared" ? (readOnly ? "Общий бюджет · только просмотр" : "Общий бюджет · изменения видны всем, у кого есть ссылка")
-      : mode === "local" ? "Сохраняется только в этом браузере" : mode === "error" ? "Нет связи с хранилищем" : "Загружаю…";
+    const note = mode === "local" ? "Сохраняется только в этом браузере" : mode === "error" ? "Нет связи с хранилищем" : readOnly ? "Только просмотр" : "";
+    $("syncNote").textContent = note; $("syncNote").hidden = !note;
     document.body.classList.toggle("ro", readOnly);
 
     if (!S) {
-      $("monthName").textContent = "Расходы";
-      $("sumLeft").innerHTML = "0<span>" + CUR + "</span>"; $("sumSpent").textContent = "0"; $("sumBudget").textContent = "0"; $("sumBar").style.width = "0";
+      $("monthBtn").textContent = mode === "loading" ? "Загружаю…" : "Расходы";
+      $("sumLeft").innerHTML = `0<small>${CUR}</small>`; $("sumOf").textContent = ""; $("sumBar").style.width = "0";
       $("groups").innerHTML = mode === "loading" ? "" :
-        `<div class="list"><div class="empty">Бюджет пока пустой. Создай первую группу, например «Обязательные», и добавь в неё расходы с суммами на месяц.</div>
-         ${readOnly ? "" : '<button class="addcat" type="button" id="firstGroup">+ Создать группу</button>'}</div>`;
-      $("hist").innerHTML = '<div class="empty">Списаний пока нет.</div>';
+        `<div class="list"><div class="empty">Бюджет пока пустой. Создай первую группу и добавь в неё расходы.</div>
+         ${readOnly ? "" : '<button class="add" type="button" id="firstGroup">+ Создать группу</button>'}</div>`;
+      $("histBox").hidden = true;
       if ($("firstGroup")) $("firstGroup").onclick = () => $("addGroupBtn").click();
       return;
     }
 
-    $("monthName").textContent = S.month;
+    $("monthBtn").textContent = S.month;
     let tb = 0, ts = 0;
     $("groups").innerHTML = S.groups.map(g => {
       let gb = 0, gs = 0;
       const rows = g.cats.map(c => {
         const sp = spentOf(c.id), left = c.budget - sp;
         gb += c.budget; gs += sp;
-        const pct = c.budget ? Math.min(100, Math.max(0, sp / c.budget * 100)) : (sp > 0 ? 100 : 0);
-        const cls = left < 0 ? "over" : (c.budget > 0 && left === 0) ? "done" : (c.budget > 0 && left / c.budget <= .2 && sp > 0) ? "low" : "";
-        const pill = left < 0 ? '<span class="pill over">перерасход</span>' : cls === "done" ? '<span class="pill done">закрыто</span>' : "";
-        return `<button class="cat ${cls}" type="button" data-cat="${c.id}">
-          <span class="name">${esc(c.name)}${pill}</span><span class="left num">${fmt(left)}</span>
-          <span class="meta">${sp ? "потрачено " + fmt(sp) : "ещё не тратили"}</span><span class="of num">из ${fmt(c.budget)}</span>
-          <span class="track"><i style="width:${pct}%"></i></span></button>`;
+        const cls = left < 0 ? "over" : (c.budget > 0 && left === 0) ? "done" : (c.budget > 0 && sp > 0 && left / c.budget <= .2) ? "low" : "";
+        return `<button class="cat ${cls}" type="button" data-cat="${c.id}"><span class="name">${esc(c.name)}</span><span class="sum">${fmt(left)}</span></button>`;
       }).join("");
       tb += gb; ts += gs;
-      return `<section class="group"><div class="ghead"><h2>${esc(g.name)}</h2><span class="num">${fmt(gb - gs)} из ${fmt(gb)}</span></div>
-        <div class="list">${rows}${readOnly ? "" : `<button class="addcat" type="button" data-addcat="${g.id}">+ Добавить расход</button>`}</div></section>`;
+      return `<section class="group"><div class="ghead"><h2>${esc(g.name)}</h2><span>${fmt(gb - gs)}</span></div>
+        <div class="list">${rows}<button class="add" type="button" data-addcat="${g.id}">+ Добавить</button></div></section>`;
     }).join("");
-    $("sumLeft").innerHTML = fmt(tb - ts) + `<span>${CUR}</span>`;
-    $("sumSpent").textContent = fmt(ts);
-    $("sumBudget").textContent = fmt(tb);
+    $("sumLeft").innerHTML = `${fmt(tb - ts)}<small>${CUR}</small>`;
+    $("sumOf").textContent = `осталось из ${fmt(tb)}`;
     $("sumBar").style.width = (tb ? Math.max(0, Math.min(100, (tb - ts) / tb * 100)) : 0) + "%";
 
-    const recent = ops().slice(-15).reverse();
-    $("hist").innerHTML = recent.length ? recent.map(opRow).join("") :
-      '<div class="empty">Пока пусто. Нажми на любой расход выше и впиши, сколько потратили.</div>';
+    const recent = ops().slice(-5).reverse();
+    $("histBox").hidden = !recent.length;
+    $("hist").innerHTML = recent.map(opRow).join("");
   }
 
   function opRow(o) {
     const f = findCat(o.catId);
-    const name = f ? f.c.name : "Удалённый расход";
-    return `<div class="op"><div class="what"><b>${esc(o.note || name)}</b><small>${o.note ? esc(name) + " · " : ""}${when(o.ts)}</small></div>
-      <span class="amt num ${o.amount < 0 ? "plus" : ""}">${o.amount < 0 ? "+" + fmt(-o.amount) : "−" + fmt(o.amount)}</span>
-      ${readOnly ? "<span></span>" : `<button type="button" data-undo="${o.id}">Отменить</button>`}</div>`;
+    const name = o.note || (f ? f.c.name : "Удалённый расход");
+    return `<div class="op"><div class="what"><div>${esc(name)}</div><small>${when(o.ts)}</small></div>
+      <span class="amt ${o.amount < 0 ? "plus" : ""}">${o.amount < 0 ? "+" + fmt(-o.amount) : "−" + fmt(o.amount)}</span>
+      ${readOnly ? "" : `<button class="undo" type="button" data-undo="${o.id}" aria-label="Отменить трату">×</button>`}</div>`;
   }
 
   // ---------- Шторка ----------
-  function openSheet(html) { $("sheetIn").innerHTML = '<div class="grab"></div>' + html; $("sheet").hidden = false; $("scrim").hidden = false; }
+  function openSheet(html) { $("sheetIn").innerHTML = html; $("sheet").hidden = false; $("scrim").hidden = false; }
   function closeSheet() { $("sheet").hidden = true; $("scrim").hidden = true; }
   $("scrim").onclick = closeSheet;
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
@@ -376,36 +319,27 @@ button { cursor: pointer; }
 
   function openSpend(catId) {
     const f = findCat(catId); if (!f) return;
-    const c = f.c, sp = spentOf(c.id), left = c.budget - sp;
-    const mine = ops().filter(o => o.catId === c.id).slice(-6).reverse();
-    if (readOnly) {
-      openSheet(`<div class="sh-title"><div><h3>${esc(c.name)}</h3><p>Осталось <b class="num">${fmt(left)}</b> из <span class="num">${fmt(c.budget)}</span> ${CUR}</p></div>
-        <button class="x" type="button" data-close aria-label="Закрыть">×</button></div>
-        ${mine.length ? `<div class="mini"><h4>История</h4>${mine.map(opRow).join("")}</div>` : '<p class="empty" style="padding:0">Списаний пока нет.</p>'}`);
-      return;
-    }
-    openSheet(`
-      <div class="sh-title"><div><h3>${esc(c.name)}</h3><p>Осталось <b class="num">${fmt(left)}</b> из <span class="num">${fmt(c.budget)}</span> ${CUR}</p></div>
-        <button class="x" type="button" data-close aria-label="Закрыть">×</button></div>
+    const c = f.c, left = c.budget - spentOf(c.id);
+    const title = `<div class="sh-title"><h3>${esc(c.name)}</h3><p>Осталось ${fmt(left)} из ${fmt(c.budget)} ${CUR}</p></div>`;
+    if (readOnly) { openSheet(title); return; }
+    openSheet(`${title}
       <label class="amount" for="amt"><input id="amt" inputmode="numeric" autocomplete="off" placeholder="0" aria-label="Сумма в сумах"><span>${CUR}</span></label>
-      <div class="chips">${[50000, 100000, 200000, 500000, 1000000].map(v => `<button type="button" data-chip="${v}">+${fmt(v)}</button>`).join("")}
-        ${left > 0 ? `<button type="button" data-chip="all">весь остаток</button>` : ""}</div>
-      <input class="note" id="note" placeholder="Комментарий (необязательно)" autocomplete="off">
-      <div class="actions"><button class="btn sec" type="button" id="refund" disabled>Вернуть</button><button class="btn main" type="button" id="spend" disabled>Списать</button></div>
-      ${mine.length ? `<div class="mini"><h4>История</h4>${mine.map(opRow).join("")}</div>` : ""}
-      <button class="linkbtn" type="button" id="editCat">Изменить название или бюджет</button>`);
+      <div class="chips">${[100000, 500000].map(v => `<button type="button" data-chip="${v}">+${fmt(v)}</button>`).join("")}
+        <button type="button" data-chip="all" ${left > 0 ? "" : "disabled"}>Всё</button></div>
+      <button class="btn main" type="button" id="spend" disabled>Потратил</button>
+      <div class="links"><button type="button" id="refund">Вернуть деньги</button><button type="button" id="editCat">Изменить</button></div>`);
     const amt = $("amt"); bindAmount(amt);
-    const sync = () => { const ok = parse(amt.value) > 0; $("spend").disabled = !ok; $("refund").disabled = !ok; };
+    const sync = () => { $("spend").disabled = !parse(amt.value); };
     amt.addEventListener("input", sync);
     $("sheetIn").querySelectorAll("[data-chip]").forEach(b => b.onclick = () => {
       const v = b.dataset.chip === "all" ? left : parse(amt.value) + +b.dataset.chip;
       amt.value = fmt(v); sync();
     });
     const go = sign => {
-      const v = parse(amt.value); if (!v) return;
-      const op = { id: uid(), catId: c.id, amount: sign * v, ts: Date.now(), note: $("note").value.trim(), period: S.period };
+      const v = parse(amt.value); if (!v) { amt.focus(); return; }
+      const op = { id: uid(), catId: c.id, amount: sign * v, ts: Date.now(), note: "", period: S.period };
       addOp(op); render(); closeSheet();
-      toast(`${sign > 0 ? "Списано" : "Возвращено"} ${fmt(v)} · ${c.name}`, op.id);
+      toast(`${sign > 0 ? "−" : "+"}${fmt(v)} · ${c.name}`, op.id);
     };
     $("spend").onclick = () => go(1);
     $("refund").onclick = () => go(-1);
@@ -418,12 +352,11 @@ button { cursor: pointer; }
     const f = catId ? findCat(catId) : null;
     const c = f ? f.c : { name: "", budget: 0 };
     openSheet(`
-      <div class="sh-title"><div><h3>${f ? "Изменить расход" : "Новый расход"}</h3></div><button class="x" type="button" data-close aria-label="Закрыть">×</button></div>
+      <div class="sh-title"><h3>${f ? "Изменить" : "Новый расход"}</h3></div>
       <label class="field" for="eName">Название<input id="eName" value="${esc(c.name)}" autocomplete="off" placeholder="Например, бензин"></label>
       <label class="field" for="eBudget">Бюджет на месяц, ${CUR}<input id="eBudget" inputmode="numeric" value="${c.budget ? fmt(c.budget) : ""}" placeholder="0" autocomplete="off"></label>
-      <div class="actions">${f ? `<button class="btn danger" type="button" id="eDel">Удалить</button>` : `<button class="btn sec" type="button" data-close>Отмена</button>`}
-        <button class="btn main" type="button" id="eSave">Сохранить</button></div>
-      <p id="eConfirm" class="empty" hidden style="padding:0">Нажми «Удалить» ещё раз: расход исчезнет из списка.</p>`);
+      <button class="btn main" type="button" id="eSave">Сохранить</button>
+      ${f ? `<button class="btn danger" type="button" id="eDel">Удалить расход</button>` : ""}`);
     bindAmount($("eBudget"));
     $("eSave").onclick = () => {
       const name = $("eName").value.trim(); if (!name) { $("eName").focus(); return; }
@@ -435,35 +368,29 @@ button { cursor: pointer; }
     if (f) {
       let armed = false;
       $("eDel").onclick = () => {
-        if (!armed) { armed = true; $("eConfirm").hidden = false; return; }
+        if (!armed) { armed = true; $("eDel").textContent = "Точно удалить? Нажми ещё раз"; return; }
         f.g.cats = f.g.cats.filter(x => x.id !== f.c.id);
         saveCfg(); render(); closeSheet();
       };
     }
-    setTimeout(() => $("eName").focus(), 60);
   }
 
-  function openText(title, label, value, onSave, extra) {
+  function openText(title, label, value, onSave, hint) {
     openSheet(`
-      <div class="sh-title"><div><h3>${title}</h3></div><button class="x" type="button" data-close aria-label="Закрыть">×</button></div>
+      <div class="sh-title"><h3>${title}</h3></div>
       <label class="field" for="tVal">${label}<input id="tVal" value="${esc(value)}" autocomplete="off"></label>
-      ${extra || ""}
-      <div class="actions"><button class="btn sec" type="button" data-close>Отмена</button><button class="btn main" type="button" id="tSave">Сохранить</button></div>`);
-    $("tSave").onclick = () => { const v = $("tVal").value.trim(); if (!v) return; onSave(v); saveCfg(); render(); closeSheet(); };
+      ${hint ? `<p class="hint">${hint}</p>` : ""}
+      <button class="btn main" type="button" id="tSave">Сохранить</button>`);
+    $("tSave").onclick = () => { const v = $("tVal").value.trim(); if (!v) { $("tVal").focus(); return; } onSave(v); saveCfg(); render(); closeSheet(); };
     setTimeout(() => $("tVal").focus(), 60);
   }
 
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-cat],[data-addcat],[data-undo],[data-close]");
+    const t = e.target.closest("[data-cat],[data-addcat],[data-undo]");
     if (!t) return;
-    if (t.dataset.close !== undefined) return closeSheet();
     if (t.dataset.cat) return openSpend(t.dataset.cat);
     if (t.dataset.addcat) return openEdit(null, t.dataset.addcat);
-    if (t.dataset.undo) {
-      const op = ALL_OPS.find(o => o.id === t.dataset.undo);
-      removeOp(t.dataset.undo); render();
-      if (!$("sheet").hidden && op) openSpend(op.catId);
-    }
+    if (t.dataset.undo) { removeOp(t.dataset.undo); render(); }
   });
 
   const editable = () => !readOnly && mode !== "loading" && mode !== "error";
@@ -477,9 +404,8 @@ button { cursor: pointer; }
   };
   $("newMonthBtn").onclick = () => {
     if (!editable() || !S) return;
-    openText("Новый месяц", "Название месяца", "",
-      v => { S.month = v; S.period = uid(); },
-      '<p class="empty" style="padding:0">Бюджеты останутся, а остатки снова станут полными. Списания прошлого месяца больше не будут показаны.</p>');
+    openText("Новый месяц", "Название месяца", "", v => { S.month = v; S.period = uid(); },
+      "Бюджеты останутся, а остатки снова станут полными.");
   };
 
   // Тост с отменой
@@ -489,17 +415,6 @@ button { cursor: pointer; }
     clearTimeout(tTimer); tTimer = setTimeout(() => $("toast").hidden = true, 4000);
   }
   $("toastUndo").onclick = () => { if (tOp) { removeOp(tOp); render(); } $("toast").hidden = true; };
-
-  // Тема
-  const themes = ["system", "light", "dark"];
-  let theme; try { theme = localStorage.getItem(KEY + "-theme") || "system"; } catch (e) { theme = "system"; }
-  const applyTheme = () => {
-    if (theme === "system") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme", theme);
-    $("themeBtn").textContent = { system: "Тема: авто", light: "Тема: светлая", dark: "Тема: тёмная" }[theme];
-  };
-  $("themeBtn").onclick = () => { theme = themes[(themes.indexOf(theme) + 1) % 3]; try { localStorage.setItem(KEY + "-theme", theme); } catch (e) {} applyTheme(); };
-  applyTheme();
 
   render();
   boot();
